@@ -1,0 +1,45 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", serif;
+
+  --color-sage-50: #f4f6f1;
+  --color-sage-100: #e8ece2;
+  --color-sage-200: #d1d9c5;
+  --color-sage-300: #a3b18a;
+  --color-sage-400: #84936d;
+  --color-sage-500: #6b7b5c;
+  --color-sage-600: #546148;
+  --color-sage-700: #424d3a;
+  --color-sage-800: #363e30;
+  --color-sage-900: #2f352a;
+
+  --color-beige-50: #faf7f3;
+  --color-beige-100: #f5f1ea;
+  --color-beige-200: #ede0d4;
+  --color-beige-300: #e2ccb8;
+  --color-beige-400: #d4a373;
+  --color-beige-500: #c68a5a;
+
+  --color-charcoal: #2f3a33;
+}
+
+@layer base {
+  body {
+    @apply bg-beige-50 text-charcoal font-sans antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
+  }
+}
+
+.glass-panel {
+  @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-sm;
+}
+
+.soft-shadow {
+  box-shadow: 0 10px 30px -10px rgba(107, 123, 92, 0.15);
+}
