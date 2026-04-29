@@ -17,6 +17,7 @@ export const businessData = {
     facebook: "https://www.facebook.com/share/1CWBMFUcd9/",
     youtube: "https://youtube.com/@clearmindcounseling-y4f/"
   },
+  logo: "https://iili.io/Bs9Vmbf.png",
   workingHours: "Mon - Sat: 10:00 AM - 8:00 PM",
   tagline: "Compassionate, evidence-based psychological care for individuals, couples, and families."
 };

@@ -102,7 +102,7 @@ export default function Navbar() {
       )}>
         <button onClick={() => handleNavClick("/")} className="flex items-center">
           <img 
-            src="/logo.png" 
+            src={businessData.logo} 
             alt="Clearmind Counselling Logo" 
             className="h-28 md:h-36 w-auto object-contain"
             referrerPolicy="no-referrer"
@@ -338,7 +338,7 @@ export default function Navbar() {
             <div className="flex items-center justify-between px-6 py-4 border-b border-beige-100">
               <button onClick={() => handleNavClick("/")} className="flex items-center">
                 <img 
-                  src="/logo.png" 
+                  src={businessData.logo} 
                   alt="Clearmind Counselling Logo" 
                   className="h-20 w-auto object-contain"
                   referrerPolicy="no-referrer"

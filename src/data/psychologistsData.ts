@@ -40,7 +40,7 @@ export const psychologistsData: Psychologist[] = [
     originalPrice: "₹2000.00",
     duration: "50 min",
     location: businessData.address,
-    image: "/janhavi_dp.jpeg",
+    image: "https://iili.io/Bs9VsfI.jpg",
     socials: { 
       linkedin: "https://www.linkedin.com/in/janhavi-more-3070471b7/", 
       instagram: "https://www.instagram.com/janhavimore_psy/", 
@@ -109,7 +109,7 @@ export const psychologistsData: Psychologist[] = [
     originalPrice: "₹2000.00",
     duration: "50 min",
     location: businessData.address,
-    image: "/vikas_dp.jpeg",
+    image: "https://iili.io/Bs9VDRs.jpg",
     socials: { 
       linkedin: "https://www.linkedin.com/in/vk-psychologist/", 
       instagram: "https://www.instagram.com/vikas.listens/", 

@@ -32,7 +32,7 @@ export default function Footer() {
         <div className="col-span-1 lg:col-span-1">
           <Link to="/" className="flex items-center mb-2">
             <img 
-              src="/logo.png" 
+              src={businessData.logo} 
               alt="Clearmind Counselling Logo" 
               className="h-40 md:h-56 w-auto object-contain"
               referrerPolicy="no-referrer"
