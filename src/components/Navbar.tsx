@@ -94,7 +94,7 @@ export default function Navbar() {
       )}
     >
       <div className="bg-sage-500 text-white text-center py-2 px-4 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] relative z-[61]">
-        50% off on your first session
+        20% off on your first session
       </div>
       <div className={cn(
         "max-w-7xl mx-auto flex items-center justify-between px-6 py-1 transition-all duration-300",
