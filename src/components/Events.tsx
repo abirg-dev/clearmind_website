@@ -9,7 +9,10 @@ import {
   ChevronRight, 
   Clock, 
   MapPin, 
-  Video
+  Video,
+  CheckCircle2,
+  Loader2,
+  ClipboardCheck
 } from "lucide-react";
 import { WhatsAppIcon } from "./WhatsAppIcon";
 import { 
@@ -27,74 +30,135 @@ import {
 } from "date-fns";
 import { cn } from "../lib/utils";
 import { businessData } from "../data/businessData";
+import { eventsData, type Event } from "../data/eventsData";
 
-// Mock Event Data
-const eventsData = [
-  {
-    id: 1,
-    title: "Safe Haven: Listening Circle",
-    description: "A gentle group session focusing on active listening and shared empathy. A safe space to express and be heard without judgment.",
-    date: "2026-05-15",
-    time: "18:00 - 19:30",
-    location: "Online (Zoom)",
-    type: "Group Session",
-    image: "https://images.unsplash.com/photo-1544027993-37dbfe43562a?auto=format&fit=crop&q=80&w=1200",
-    attendees: 12,
-    category: "Emotional Support"
-  },
-  {
-    id: 2,
-    title: "Colors of the Mind: Art Therapy",
-    description: "Express your emotions through art. This workshop uses creative processes to improve physical, mental, and emotional well-being.",
-    date: "2026-05-22",
-    time: "15:00 - 17:00",
-    location: "South Mumbai Studio",
-    type: "Workshop",
-    image: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&q=80&w=1200",
-    attendees: 8,
-    category: "Art Therapy"
-  },
-  {
-    id: 3,
-    title: "Mindful Morning: Group Meditation",
-    description: "Start your weekend with clarity. A led group meditation session followed by a short discussion on mindfulness in daily life.",
-    date: "2026-05-24",
-    time: "08:00 - 09:00",
-    location: "Online",
-    type: "Meditation",
-    image: "https://images.unsplash.com/photo-1499728603263-13726abce5fd?auto=format&fit=crop&q=80&w=1200",
-    attendees: 25,
-    category: "Mindfulness"
-  },
-  {
-    id: 4,
-    title: "Building Resilience Workshop",
-    description: "Practical psychological tools to help you bounce back from life's challenges. Led by our senior psychologist Vikas Kamble.",
-    date: "2026-06-05",
-    time: "11:00 - 13:00",
-    location: businessData.address,
-    type: "Educational",
-    image: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&q=80&w=1200",
-    attendees: 15,
-    category: "Personal Growth"
-  },
-  {
-    id: 5,
-    title: "Child Psychology Q&A for Parents",
-    description: "An interactive session for parents to discuss child behavior, development, and emotional needs in a supportive environment.",
-    date: "2026-06-12",
-    time: "17:00 - 18:30",
-    location: "Online",
-    type: "Webinar",
-    image: "https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?auto=format&fit=crop&q=80&w=1200",
-    attendees: 40,
-    category: "Parenting"
-  }
-];
+type EventType = Event;
+
+function RegistrationModal({ event, onClose }: { event: EventType; onClose: () => void }) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      name: formData.get("name"),
+      email: formData.get("email"),
+      eventTitle: event.title,
+      eventDate: format(parseISO(event.date), "MMMM d, yyyy"),
+      eventTime: event.time,
+      eventLocation: event.location,
+      joiningLink: event.joiningLink,
+    };
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/event-register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        setIsSuccess(true);
+      } else {
+        throw new Error("Registration failed");
+      }
+    } catch (error) {
+      console.error("Error registering for event:", error);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center px-6">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+        className="absolute inset-0 bg-charcoal/40 backdrop-blur-sm"
+      />
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+        className="relative bg-white w-full max-w-lg rounded-[2.5rem] overflow-hidden shadow-2xl border border-beige-100"
+      >
+        {isSuccess ? (
+          <div className="p-12 text-center">
+            <div className="w-20 h-20 bg-sage-100 rounded-full flex items-center justify-center mx-auto mb-8">
+              <CheckCircle2 className="w-10 h-10 text-sage-600" />
+            </div>
+            <h2 className="text-3xl font-serif font-bold text-charcoal mb-4">Registration Successful!</h2>
+            <p className="text-charcoal/70 mb-8">
+              A confirmation email has been sent to your inbox with the event details and joining link.
+            </p>
+            <button 
+              onClick={onClose}
+              className="w-full bg-sage-500 text-white py-4 rounded-2xl font-bold hover:bg-sage-600 transition-all"
+            >
+              Close
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="p-8 bg-sage-50 border-b border-beige-100">
+              <h2 className="text-2xl font-serif font-bold text-charcoal mb-2">Register for Event</h2>
+              <p className="text-sage-600 font-bold text-sm tracking-wide uppercase">{event.title}</p>
+            </div>
+            <form onSubmit={handleSubmit} className="p-8 space-y-6">
+              <div>
+                <label className="block text-xs font-bold text-charcoal/50 uppercase tracking-widest mb-2 px-1">Full Name</label>
+                <input 
+                  required
+                  name="name"
+                  type="text"
+                  placeholder="John Doe"
+                  className="w-full px-5 py-4 rounded-2xl bg-beige-50 border-2 border-transparent focus:border-sage-300 focus:bg-white outline-none transition-all placeholder:text-charcoal/30"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-charcoal/50 uppercase tracking-widest mb-2 px-1">Email Address</label>
+                <input 
+                  required
+                  name="email"
+                  type="email"
+                  placeholder="john@example.com"
+                  className="w-full px-5 py-4 rounded-2xl bg-beige-50 border-2 border-transparent focus:border-sage-300 focus:bg-white outline-none transition-all placeholder:text-charcoal/30"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4 pt-4">
+                <button 
+                  type="button"
+                  onClick={onClose}
+                  className="py-4 rounded-2xl border-2 border-beige-100 font-bold text-charcoal hover:bg-beige-50 transition-all"
+                >
+                  Cancel
+                </button>
+                <button 
+                  disabled={isSubmitting}
+                  type="submit"
+                  className="py-4 rounded-2xl bg-sage-500 text-white font-bold hover:bg-sage-600 transition-all shadow-lg shadow-sage-200 disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Confirm Registration"}
+                </button>
+              </div>
+            </form>
+          </>
+        )}
+      </motion.div>
+    </div>
+  );
+}
 
 export default function Events() {
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
   const [currentMonth, setCurrentMonth] = useState(new Date(2026, 4, 1)); // May 2026
+  const [registeringEvent, setRegisteringEvent] = useState<EventType | null>(null);
 
   const renderHeader = () => {
     return (
@@ -155,7 +219,7 @@ export default function Events() {
             transition={{ duration: 0.5, delay: index * 0.1 }}
             className="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-beige-100"
           >
-            <div className="relative h-48 overflow-hidden">
+            <div className="relative aspect-[3/4] overflow-hidden">
               <img 
                 src={event.image} 
                 alt={event.title}
@@ -206,15 +270,24 @@ export default function Events() {
                 </div>
               </div>
               
-              <a 
-                href={`https://api.whatsapp.com/send?phone=${businessData.whatsapp.number}&text=Hello%20Clearmind%20Counselling%2C%20I%20am%20interested%20in%20registering%20for%20the%20event%3A%20${encodeURIComponent(event.title)}.%20Can%20you%20share%20more%20details%3F`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full mt-6 py-3 bg-beige-50 text-charcoal font-semibold rounded-xl hover:bg-sage-500 hover:text-white transition-all"
-              >
-                <WhatsAppIcon className="w-5 h-5" />
-                Register Now
-              </a>
+              <div className="grid grid-cols-2 gap-3 mt-6">
+                <button 
+                  onClick={() => setRegisteringEvent(event)}
+                  className="flex items-center justify-center gap-2 py-3 bg-sage-500 text-white font-bold rounded-xl hover:bg-sage-600 transition-all shadow-md shadow-sage-100"
+                >
+                  <ClipboardCheck className="w-5 h-5" />
+                  Register
+                </button>
+                <a 
+                  href={`https://api.whatsapp.com/send?phone=${businessData.whatsapp.number}&text=Hello%20Clearmind%20Counselling%2C%20I%20am%20interested%20in%20registering%20for%20the%20event%3A%20${encodeURIComponent(event.title)}.%20Can%20you%20share%20more%20details%3F`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 py-3 bg-beige-50 text-charcoal font-semibold rounded-xl hover:bg-beige-100 transition-all"
+                >
+                  <WhatsAppIcon className="w-4 h-4" />
+                  WhatsApp
+                </a>
+              </div>
             </div>
           </motion.div>
         ))}
@@ -445,7 +518,7 @@ export default function Events() {
               exit={{ opacity: 0, y: 20 }}
               className="mt-8 bg-white rounded-3xl p-8 border border-sage-100 shadow-lg flex flex-col md:flex-row gap-8 items-center"
             >
-              <div className="w-full md:w-1/3 h-48 rounded-2xl overflow-hidden">
+              <div className="w-full md:w-1/3 aspect-[3/4] rounded-2xl overflow-hidden">
                 <img 
                   src={selectedEvent.image} 
                   alt={selectedEvent.title} 
@@ -485,15 +558,24 @@ export default function Events() {
                      )}
                    </div>
                 </div>
-                <a 
-                  href={`https://api.whatsapp.com/send?phone=${businessData.whatsapp.number}&text=Hello%20Clearmind%20Counselling%2C%20I%20am%20interested%20in%20registering%20for%20the%20event%3A%20${encodeURIComponent(selectedEvent.title)}.%20Can%20you%20share%20more%20details%3F`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 bg-sage-500 text-white px-8 py-3 rounded-full font-bold hover:bg-sage-600 transition-all shadow-md"
-                >
-                  <WhatsAppIcon className="w-5 h-5" />
-                  Register for this Event
-                </a>
+                <div className="flex flex-wrap gap-4 mt-8">
+                  <button 
+                    onClick={() => setRegisteringEvent(selectedEvent)}
+                    className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 bg-sage-500 text-white px-10 py-4 rounded-2xl font-bold hover:bg-sage-600 transition-all shadow-xl shadow-sage-200"
+                  >
+                    <ClipboardCheck className="w-5 h-5" />
+                    Register for Event
+                  </button>
+                  <a 
+                    href={`https://api.whatsapp.com/send?phone=${businessData.whatsapp.number}&text=Hello%20Clearmind%20Counselling%2C%20I%20am%20interested%20in%20registering%20for%20the%20event%3A%20${encodeURIComponent(selectedEvent.title)}.%20Can%20you%20share%20more%20details%3F`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 border-2 border-beige-100 text-charcoal px-10 py-4 rounded-2xl font-bold hover:bg-beige-50 transition-all"
+                  >
+                    <WhatsAppIcon className="w-5 h-5" />
+                    Inquire via WhatsApp
+                  </a>
+                </div>
               </div>
             </motion.div>
           )}
@@ -521,6 +603,15 @@ export default function Events() {
           </motion.div>
         </AnimatePresence>
       </main>
+
+      <AnimatePresence>
+        {registeringEvent && (
+          <RegistrationModal 
+            event={registeringEvent} 
+            onClose={() => setRegisteringEvent(null)} 
+          />
+        )}
+      </AnimatePresence>
 
       <Footer />
     </div>

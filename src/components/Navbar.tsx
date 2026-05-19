@@ -13,9 +13,11 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isTeamOpen, setIsTeamOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
+  const [isResourcesOpen, setIsResourcesOpen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [isMobileTeamOpen, setIsMobileTeamOpen] = useState(false);
   const [isMobileServicesOpen, setIsMobileServicesOpen] = useState(false);
+  const [isMobileResourcesOpen, setIsMobileResourcesOpen] = useState(false);
   const [isMobileContactOpen, setIsMobileContactOpen] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
   const location = useLocation();
@@ -34,6 +36,7 @@ export default function Navbar() {
     { name: "Home", href: "/" },
     { name: "About", href: "/#about" },
     { name: "Services", href: "/#services" },
+    { name: "Resources", href: "/resources" },
     { name: "Our Team", href: "/#team" },
     { name: "Events", href: "/events" },
     { name: "Contact", href: "#contact" },
@@ -155,6 +158,69 @@ export default function Navbar() {
                         >
                           Overview
                         </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            }
+            if (link.name === "Resources") {
+              return (
+                <div
+                  key={link.name}
+                  className="relative group"
+                  onMouseEnter={() => setIsResourcesOpen(true)}
+                  onMouseLeave={() => setIsResourcesOpen(false)}
+                >
+                  <button
+                    onClick={() => setIsResourcesOpen(!isResourcesOpen)}
+                    className="flex items-center gap-1 text-sm font-medium text-charcoal/70 hover:text-sage-500 transition-colors py-2"
+                  >
+                    {link.name}
+                    <ChevronDown className={cn("w-4 h-4 transition-transform duration-200", isResourcesOpen && "rotate-180")} />
+                  </button>
+
+                  <AnimatePresence>
+                    {isResourcesOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute top-full left-0 mt-1 w-64 bg-white rounded-2xl shadow-xl border border-beige-100 overflow-hidden py-2"
+                      >
+                        <Link
+                          to="/mental-health-checkin"
+                          className="flex flex-col px-4 py-2.5 hover:bg-sage-50 transition-colors"
+                          onClick={() => setIsResourcesOpen(false)}
+                        >
+                          <span className="text-sm font-medium text-charcoal">Mental Health Check-in</span>
+                          <span className="text-[10px] text-sage-500 uppercase font-bold tracking-tight">Free Assessment</span>
+                        </Link>
+                        <Link
+                          to="/resources?type=blog"
+                          className="flex flex-col px-4 py-2.5 hover:bg-sage-50 transition-colors"
+                          onClick={() => setIsResourcesOpen(false)}
+                        >
+                          <span className="text-sm font-medium text-charcoal">Articles & Blogs</span>
+                          <span className="text-[10px] text-charcoal/50 uppercase tracking-tight">Research & Insights</span>
+                        </Link>
+                        <Link
+                          to="/resources?type=course"
+                          className="flex flex-col px-4 py-2.5 hover:bg-sage-50 transition-colors"
+                          onClick={() => setIsResourcesOpen(false)}
+                        >
+                          <span className="text-sm font-medium text-charcoal">Mini Courses</span>
+                          <span className="text-[10px] text-charcoal/50 uppercase tracking-tight">Structured Learning</span>
+                        </Link>
+                        <div className="border-t border-beige-100 my-1" />
+                        <Link
+                          to="/resources"
+                          className="w-full block px-4 py-2 text-xs font-bold text-sage-500 hover:bg-sage-50 transition-colors uppercase tracking-wider"
+                          onClick={() => setIsResourcesOpen(false)}
+                        >
+                          All Resources
+                        </Link>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -391,6 +457,61 @@ export default function Navbar() {
                             >
                               View All Services
                             </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  );
+                }
+                if (link.name === "Resources") {
+                  return (
+                    <div key={link.name} className="flex flex-col gap-4">
+                      <button
+                        onClick={() => setIsMobileResourcesOpen(!isMobileResourcesOpen)}
+                        className="flex items-center justify-between text-2xl font-serif font-bold text-charcoal"
+                      >
+                        {link.name}
+                        <ChevronDown className={cn("w-6 h-6 transition-transform duration-300", isMobileResourcesOpen && "rotate-180")} />
+                      </button>
+                      <AnimatePresence>
+                        {isMobileResourcesOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="flex flex-col gap-6 pl-4 overflow-hidden"
+                          >
+                            <Link
+                              to="/mental-health-checkin"
+                              className="flex flex-col group"
+                              onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                              <span className="text-lg font-medium text-charcoal group-hover:text-sage-500 transition-colors">Mental Health Check-in</span>
+                              <span className="text-sm text-sage-500 font-bold">Free Assessment</span>
+                            </Link>
+                            <Link
+                              to="/resources?type=blog"
+                              className="flex flex-col group"
+                              onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                              <span className="text-lg font-medium text-charcoal group-hover:text-sage-500 transition-colors">Articles & Blogs</span>
+                              <span className="text-sm text-charcoal/50">Research & Insights</span>
+                            </Link>
+                            <Link
+                              to="/resources?type=course"
+                              className="flex flex-col group"
+                              onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                              <span className="text-lg font-medium text-charcoal group-hover:text-sage-500 transition-colors">Mini Courses</span>
+                              <span className="text-sm text-charcoal/50">Structured Learning</span>
+                            </Link>
+                            <Link
+                              to="/resources"
+                              className="text-sm font-bold text-sage-500 text-left uppercase tracking-widest"
+                              onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                              View All Resources
+                            </Link>
                           </motion.div>
                         )}
                       </AnimatePresence>

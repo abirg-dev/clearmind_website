@@ -43,3 +43,19 @@
 .soft-shadow {
   box-shadow: 0 10px 30px -10px rgba(107, 123, 92, 0.15);
 }
+
+.markdown-body ul {
+  @apply list-disc list-inside space-y-2 mb-6;
+}
+
+.markdown-body ol {
+  @apply list-decimal list-inside space-y-2 mb-6;
+}
+
+.markdown-body p {
+  @apply mb-6;
+}
+
+.markdown-body strong {
+  @apply font-semibold text-charcoal;
+}

@@ -119,6 +119,211 @@ Clearmind Counselling Team
     }
   });
 
+  app.post("/api/assessment-submit", async (req, res) => {
+    const { name, email, assessmentTitle, score, result } = req.body;
+    console.log("New Assessment Submission:", { name, email, assessmentTitle, score, result });
+
+    let emailSent = false;
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      try {
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
+          },
+        });
+
+        const mailOptions = {
+          from: `"Clearmind Assessments" <${process.env.EMAIL_USER}>`,
+          to: email,
+          cc: process.env.EMAIL_USER,
+          subject: `${assessmentTitle} Result - ${name}`,
+          html: `
+<div style="font-family: sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 30px; border: 1px solid #e5e7eb; border-radius: 12px; background-color: #fff;">
+  <div style="text-align: center; margin-bottom: 40px;">
+    <h2 style="color: #6b705c; margin-bottom: 5px;">Clearmind Counselling</h2>
+    <p style="color: #7b8c7c; font-weight: bold; margin-top: 0; text-transform: uppercase; font-size: 12px; letter-spacing: 2px;">Your Assessment Results</p>
+  </div>
+  
+  <p style="font-size: 16px;">Hello <strong>${name}</strong>,</p>
+  <p style="font-size: 16px; line-height: 1.6;">Thank you for taking our <strong>${assessmentTitle}</strong>. Here are your personalized results:</p>
+  
+  <div style="background-color: #f7f9f7; border-left: 5px solid #6b705c; padding: 25px; border-radius: 8px; margin: 30px 0;">
+    <h3 style="margin-top: 0; color: #6b705c;">Summary: ${result.title}</h3>
+    <p style="font-size: 16px; line-height: 1.6; color: #4a4a4a; margin-bottom: 20px;">${result.description}</p>
+    
+    <div style="background-color: #fff; padding: 15px; border-radius: 6px; border: 1px solid #e1e8e1; margin-bottom: 20px;">
+      <h4 style="margin-top: 0; color: #6b705c; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Our Recommendation</h4>
+      <p style="font-size: 15px; line-height: 1.5; color: #555; margin-bottom: 0;">${result.recommendation}</p>
+    </div>
+
+    <div style="background-color: #fff; padding: 15px; border-radius: 6px; border: 1px solid #e1e8e1;">
+      <h4 style="margin-top: 0; color: #6b705c; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Management Tips</h4>
+      <ul style="padding-left: 20px; color: #555; font-size: 15px; line-height: 1.6; margin-bottom: 0;">
+        ${result.tips.map((tip: string) => `<li style="margin-bottom: 8px;">${tip}</li>`).join('')}
+      </ul>
+    </div>
+  </div>
+  
+  <div style="text-align: center; margin: 40px 0;">
+    <p style="margin-bottom: 20px; font-size: 15px; color: #666;">Ready to take the next step toward better mental health?</p>
+    <a href="https://ais-dev-wg3dh3qu3j6xrxyiw6vh2s-339902116522.asia-southeast1.run.app/#booking" style="background-color: #6b705c; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Book a Professional Consultation</a>
+  </div>
+  
+  <div style="border-top: 1px solid #eee; margin-top: 40px; padding-top: 20px; font-size: 12px; color: #888; text-align: center;">
+    <p>This assessment is a screening tool and does not replace a clinical diagnosis.</p>
+    <p>&copy; 2026 Clearmind Counselling. All rights reserved.</p>
+  </div>
+</div>
+          `,
+        };
+        await transporter.sendMail(mailOptions);
+        emailSent = true;
+      } catch (err) {
+        console.error("Failed to send assessment email:", err);
+      }
+    }
+
+    res.json({ success: true, emailSent });
+  });
+
+  app.post("/api/checkin-submit", async (req, res) => {
+    const { name, email, results } = req.body;
+    console.log("New Mental Health Check-in Submission:", { name, email, resultsCount: results?.length });
+
+    let emailSent = false;
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      try {
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
+          },
+        });
+
+        const resultsHtml = results.map((res: any) => `
+<div style="background-color: #f7f9f7; border-left: 5px solid #6b705c; padding: 25px; border-radius: 8px; margin: 20px 0;">
+  <h3 style="margin-top: 0; color: #6b705c;">${res.title}: ${res.result.title}</h3>
+  <p style="font-size: 15px; line-height: 1.5; color: #4a4a4a;">${res.result.description}</p>
+  <div style="background-color: #fff; padding: 15px; border-radius: 6px; border: 1px solid #e1e8e1; margin-top: 15px;">
+    <strong style="color: #6b705c; font-size: 13px; text-transform: uppercase;">Recommendation:</strong>
+    <p style="margin-top: 5px; font-size: 14px;">${res.result.recommendation}</p>
+    <strong style="color: #6b705c; font-size: 13px; text-transform: uppercase;">Quick Tips:</strong>
+    <ul style="margin-top: 5px; font-size: 14px; padding-left: 20px;">
+      ${res.result.tips.slice(0, 3).map((tip: string) => `<li>${tip}</li>`).join('')}
+    </ul>
+  </div>
+</div>
+        `).join('');
+
+        const mailOptions = {
+          from: `"Clearmind Wellness" <${process.env.EMAIL_USER}>`,
+          to: email,
+          cc: process.env.EMAIL_USER,
+          subject: `Mental Health Check-in Summary - ${name}`,
+          html: `
+<div style="font-family: sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 30px; border: 1px solid #e5e7eb; border-radius: 12px; background-color: #fff;">
+  <div style="text-align: center; margin-bottom: 40px;">
+    <h2 style="color: #6b705c; margin-bottom: 5px;">Clearmind Counselling</h2>
+    <p style="color: #7b8c7c; font-weight: bold; margin-top: 0; text-transform: uppercase; font-size: 12px; letter-spacing: 2px;">Your Wellness Summary</p>
+  </div>
+  
+  <p style="font-size: 16px;">Hello <strong>${name}</strong>,</p>
+  <p style="font-size: 16px; line-height: 1.6;">Great job completing your mental health check-in. Here is a consolidated summary of your results across multiple areas:</p>
+  
+  ${resultsHtml}
+  
+  <div style="text-align: center; margin: 40px 0;">
+    <p style="margin-bottom: 20px; font-size: 15px; color: #666;">Take the next step with professional support:</p>
+    <a href="https://ais-dev-wg3dh3qu3j6xrxyiw6vh2s-339902116522.asia-southeast1.run.app/#booking" style="background-color: #6b705c; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Book a Professional Consultation</a>
+  </div>
+  
+  <div style="border-top: 1px solid #eee; margin-top: 40px; padding-top: 20px; font-size: 12px; color: #888; text-align: center;">
+    <p>These assessments are screening tools and do not replace professional clinical diagnosis.</p>
+    <p>&copy; 2026 Clearmind Counselling. All rights reserved.</p>
+  </div>
+</div>
+          `,
+        };
+        await transporter.sendMail(mailOptions);
+        emailSent = true;
+      } catch (err) {
+        console.error("Failed to send checkin summary email:", err);
+      }
+    }
+
+    res.json({ success: true, emailSent });
+  });
+
+  app.post("/api/event-register", async (req, res) => {
+    const { name, email, eventTitle, eventDate, eventTime, eventLocation, joiningLink } = req.body;
+    console.log("New Event Registration:", { name, email, eventTitle, eventDate, eventTime, eventLocation });
+
+    let emailSent = false;
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      try {
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
+          },
+        });
+
+        const mailOptions = {
+          from: `"Clearmind Events" <${process.env.EMAIL_USER}>`,
+          to: email,
+          cc: process.env.EMAIL_USER,
+          subject: `Registration Confirmed: ${eventTitle}`,
+          html: `
+<div style="font-family: sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 30px; border: 1px solid #e5e7eb; border-radius: 12px; background-color: #fff;">
+  <div style="text-align: center; margin-bottom: 40px;">
+    <h2 style="color: #6b705c; margin-bottom: 5px;">Clearmind Counselling</h2>
+    <p style="color: #7b8c7c; font-weight: bold; margin-top: 0; text-transform: uppercase; font-size: 12px; letter-spacing: 2px;">Event Registration Confirmed</p>
+  </div>
+  
+  <p style="font-size: 16px;">Hello <strong>${name}</strong>,</p>
+  <p style="font-size: 16px; line-height: 1.6;">
+  You have successfully registered for <strong>${eventTitle}</strong>. We are looking forward to having you with us!
+  We will get back to you with more details</p>
+  
+  <div style="background-color: #f7f9f7; border-left: 5px solid #6b705c; padding: 25px; border-radius: 8px; margin: 30px 0;">
+    <h3 style="margin-top: 0; color: #6b705c;">Event Details</h3>
+    <ul style="list-style: none; padding: 0; margin: 0;">
+      <li style="margin-bottom: 12px; display: flex; align-items: center;">
+        <span style="font-weight: bold; width: 80px; display: inline-block;">Date:</span> ${eventDate}
+      </li>
+      <li style="margin-bottom: 12px; display: flex; align-items: center;">
+        <span style="font-weight: bold; width: 80px; display: inline-block;">Time:</span> ${eventTime}
+      </li>
+      <li style="margin-bottom: 12px; display: flex; align-items: center;">
+        <span style="font-weight: bold; width: 80px; display: inline-block;">Location:</span> ${eventLocation}
+      </li>
+    </ul>
+  </div>
+  
+  <p style="font-size: 15px; color: #666; line-height: 1.6;">
+    If you have any questions or need to cancel your registration, please reply to this email or contact us via WhatsApp.
+  </p>
+  
+  <div style="border-top: 1px solid #eee; margin-top: 40px; padding-top: 20px; font-size: 12px; color: #888; text-align: center;">
+    <p>&copy; 2026 Clearmind Counselling. All rights reserved.</p>
+  </div>
+</div>
+          `,
+        };
+        await transporter.sendMail(mailOptions);
+        emailSent = true;
+      } catch (err) {
+        console.error("Failed to send event registration email:", err);
+      }
+    }
+
+    res.json({ success: true, emailSent });
+  });
+
   app.post("/api/subscribe", async (req, res) => {
     const { email } = req.body;
     console.log("New Newsletter Subscription:", { email });

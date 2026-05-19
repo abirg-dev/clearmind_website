@@ -66,6 +66,7 @@ export default function Footer() {
             <li><button onClick={() => handleNavClick("#about")} className="hover:text-sage-300 transition-colors">About Us</button></li>
             <li><button onClick={() => handleNavClick("#services")} className="hover:text-sage-300 transition-colors">Our Services</button></li>
             <li><button onClick={() => handleNavClick("#team")} className="hover:text-sage-300 transition-colors">Meet the Team</button></li>
+            <li><Link to="/resources" className="hover:text-sage-300 transition-colors">Resources & Blogs</Link></li>
             <li><button onClick={() => handleNavClick("#booking")} className="hover:text-sage-300 transition-colors">Request Appointment</button></li>
           </ul>
         </div>

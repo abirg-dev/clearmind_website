@@ -20,6 +20,11 @@ import ScrollToTop from "./components/ScrollToTop";
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import TermsOfService from "./components/TermsOfService";
 import CookiePolicy from "./components/CookiePolicy";
+import Assessment from "./components/Assessment";
+import MentalHealthCheckIn from "./components/MentalHealthCheckIn";
+import CheckInPromo from "./components/CheckInPromo";
+import Resources from "./components/Resources";
+import ResourceDetail from "./components/ResourceDetail";
 
 function HomePage() {
   return (
@@ -27,6 +32,7 @@ function HomePage() {
       <Navbar />
       <main>
         <Hero />
+        <CheckInPromo />
         <About />
         <Services />
         <WhoItIsFor />
@@ -52,6 +58,10 @@ export default function App() {
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
           <Route path="/cookie-policy" element={<CookiePolicy />} />
+          <Route path="/assessment/:type" element={<Assessment />} />
+          <Route path="/mental-health-checkin" element={<MentalHealthCheckIn />} />
+          <Route path="/resources" element={<Resources />} />
+          <Route path="/resources/:id" element={<ResourceDetail />} />
         </Routes>
       </div>
     </Router>
